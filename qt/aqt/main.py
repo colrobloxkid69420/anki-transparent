@@ -512,6 +512,8 @@ class AnkiQt(QMainWindow):
         # titlebar
         self.setWindowTitle(f"{self.pm.name} - Anki")
         # show and raise window for osx
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.show()
         self.activateWindow()
         self.raise_()
