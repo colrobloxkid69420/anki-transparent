@@ -264,6 +264,7 @@ impl crate::services::SchedulerService for Collection {
             1,
             1,
             &input.current_params,
+            input.num_of_relearning_steps as usize,
         )
     }
 
@@ -348,6 +349,7 @@ impl crate::services::BackendSchedulerService for Backend {
         let params = fsrs.compute_parameters(
             req.items.into_iter().map(fsrs_item_proto_to_fsrs).collect(),
             None,
+            true,
         )?;
         Ok(ComputeFsrsParamsResponse { params, fsrs_items })
     }
@@ -362,7 +364,7 @@ impl crate::services::BackendSchedulerService for Backend {
             .into_iter()
             .map(fsrs_item_proto_to_fsrs)
             .collect();
-        let params = fsrs.benchmark(train_set);
+        let params = fsrs.benchmark(train_set, true);
         Ok(FsrsBenchmarkResponse { params })
     }
 

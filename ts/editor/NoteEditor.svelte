@@ -277,8 +277,10 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         hidden: hideFieldInOcclusionType(index, ioFields),
     })) as FieldData[];
 
+    let lastSavedTags: string[] | null = null;
     function saveTags({ detail }: CustomEvent): void {
         tagAmount = detail.tags.filter((tag: string) => tag != "").length;
+        lastSavedTags = detail.tags;
         bridgeCommand(`saveTags:${JSON.stringify(detail.tags)}`);
     }
 
@@ -386,9 +388,11 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
      * Enable/Disable add-on buttons that do not have the `perm` class
      */
     function setAddonButtonsDisabled(disabled: boolean): void {
-        document.querySelectorAll("button.linkb:not(.perm)").forEach((button) => {
-            (button as HTMLButtonElement).disabled = disabled;
-        });
+        document
+            .querySelectorAll<HTMLButtonElement>("button.linkb:not(.perm)")
+            .forEach((button) => {
+                button.disabled = disabled;
+            });
     }
 
     import { ImageOcclusionFieldIndexes } from "@generated/anki/image_occlusion_pb";
@@ -429,8 +433,11 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         imageOcclusionMode = undefined;
         await tick();
         imageOcclusionMode = options.mode;
-        if (options.mode.kind === "add") {
+        if (options.mode.kind === "add" && !("clonedNoteId" in options.mode)) {
             fieldStores[ioFields.image].set(options.html);
+            // the image field is set programmatically and does not need debouncing
+            // commit immediately to avoid a race condition with the occlusions field
+            saveFieldNow();
 
             // new image is being added
             if (isIOImageLoaded) {
@@ -441,13 +448,6 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
                         }),
                     ),
                 );
-            }
-        } else {
-            const clozeNote = get(fieldStores[ioFields.occlusions]);
-            if (clozeNote.includes("oi=1")) {
-                $hideAllGuessOne = true;
-            } else {
-                $hideAllGuessOne = false;
             }
         }
 
@@ -536,6 +536,11 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         isIOImageLoaded,
         imageOcclusionMode,
     );
+
+    $: if (isImageOcclusion && $ioMaskEditorVisible && lastSavedTags) {
+        setTags(lastSavedTags);
+        lastSavedTags = null;
+    }
 
     onMount(() => {
         function wrap(before: string, after: string): void {

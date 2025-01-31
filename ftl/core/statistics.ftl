@@ -43,6 +43,24 @@ statistics-in-time-span-years =
         [one] in { $amount } year
        *[other] in { $amount } years
     }
+# Shown at the bottom of the deck list, and in the statistics screen.
+# eg "Studied 3 cards in 13 seconds today (4.33s/card)."
+# The { statistics-in-time-span-seconds } part should be pasted in from the English
+# version unmodified.
+statistics-studied-today =
+    Studied { statistics-cards }
+    { $unit ->
+        [seconds] { statistics-in-time-span-seconds }
+        [minutes] { statistics-in-time-span-minutes }
+        [hours] { statistics-in-time-span-hours }
+        [days] { statistics-in-time-span-days }
+        [months] { statistics-in-time-span-months }
+       *[years] { statistics-in-time-span-years }
+    } today
+    ({ $secs-per-card }s/card)
+
+##
+
 statistics-cards =
     { $cards ->
         [one] { $cards } card
@@ -59,21 +77,10 @@ statistics-reviews =
         [one] { $reviews } review
        *[other] { $reviews } reviews
     }
-# Shown at the bottom of the deck list, and in the statistics screen.
-# eg "Studied 3 cards in 13 seconds today (4.33s/card)."
-# The { statistics-in-time-span-seconds } part should be pasted in from the English
-# version unmodified.
-statistics-studied-today =
-    Studied { statistics-cards }
-    { $unit ->
-        [seconds] { statistics-in-time-span-seconds }
-        [minutes] { statistics-in-time-span-minutes }
-        [hours] { statistics-in-time-span-hours }
-        [days] { statistics-in-time-span-days }
-        [months] { statistics-in-time-span-months }
-       *[years] { statistics-in-time-span-years }
-    } today
-    ({ $secs-per-card }s/card)
+# This fragment of the tooltip in the FSRS simulation
+# diagram (Deck options -> FSRS) shows the total number of
+# cards that can be recalled or retrieved on a specific date.
+statistics-memorized = {$memorized} memorized
 statistics-today-title = Today
 statistics-today-again-count = Again count:
 statistics-today-type-counts = Learn: { $learnCount }, Review: { $reviewCount }, Relearn: { $relearnCount }, Filtered: { $filteredCount }
@@ -91,18 +98,46 @@ statistics-counts-learning-cards = Learning
 statistics-counts-relearning-cards = Relearning
 statistics-counts-title = Card Counts
 statistics-counts-separate-suspended-buried-cards = Separate suspended/buried cards
+
+## True Retention represents your actual retention rate from past reviews, in
+## comparison to the "desired retention" parameter of FSRS, which forecasts
+## future retention. True Retention is the percentage of all reviewed cards
+## that were marked as "Hard," "Good," or "Easy" within a specific time period.
+##
+## Most of these strings are used as column / row headings in a table.
+## (Excluding -title and -subtitle)
+## It is important to keep these translations short so that they do not make
+## the table too large to display on a single stats card.
+##
+## N.B. Stats cards may be very small on mobile devices and when the Stats
+##      window is certain sizes.
+
 statistics-true-retention-title = True Retention
 statistics-true-retention-subtitle = Pass rate of cards with an interval ≥ 1 day.
 statistics-true-retention-range = Range
 statistics-true-retention-pass = Pass
 statistics-true-retention-fail = Fail
+# This will usually be the same as statistics-counts-total-cards
+statistics-true-retention-total = Total
+statistics-true-retention-count = Count
 statistics-true-retention-retention = Retention
+# This will usually be the same as statistics-counts-young-cards
+statistics-true-retention-young = Young
+# This will usually be the same as statistics-counts-mature-cards
+statistics-true-retention-mature = Mature
+statistics-true-retention-all = All
 statistics-true-retention-today = Today
 statistics-true-retention-yesterday = Yesterday
 statistics-true-retention-week = Last week
 statistics-true-retention-month = Last month
 statistics-true-retention-year = Last year
 statistics-true-retention-all-time = All time
+# If there are no reviews within a specific time period, the retention
+# percentage cannot be calculated and is displayed as "N/A."
+statistics-true-retention-not-applicable = N/A
+
+##
+
 statistics-range-all-time = all
 statistics-range-1-year-history = last 12 months
 statistics-range-all-history = all history

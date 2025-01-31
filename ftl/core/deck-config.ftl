@@ -363,10 +363,10 @@ deck-config-must-have-400-reviews =
 deck-config-weights = FSRS parameters
 deck-config-compute-optimal-weights = Optimize FSRS parameters
 deck-config-compute-minimum-recommended-retention = Minimum recommended retention
-deck-config-optimize-button = Optimize
+deck-config-optimize-button = Optimize Current Preset
 deck-config-compute-button = Compute
 deck-config-ignore-before = Ignore cards reviewed before
-deck-config-optimize-all-tip = You can optimize all presets at once by using the dropdown button next to "Save".
+deck-config-time-to-optimize = It's been a while - using the Optimize All button is recommended.
 deck-config-evaluate-button = Evaluate
 deck-config-desired-retention = Desired retention
 deck-config-historical-retention = Historical retention
@@ -385,7 +385,7 @@ deck-config-fsrs-tooltip =
     more material in the same amount of time. This setting is shared by all presets.
 
 deck-config-desired-retention-tooltip =
-    The default value of 0.9 schedules cards so that you have a 90% chance of remembering them when
+    By default, Anki schedules cards so that you have a 90% chance of remembering them when
     they come up for review again. If you increase this value, Anki will show cards more frequently
     to increase the chances of you remembering them. If you decrease the value, Anki will show cards
     less frequently, and you will forget more of them. Be conservative when adjusting this - higher
@@ -463,10 +463,19 @@ deck-config-days-to-simulate = Days to simulate
 deck-config-desired-retention-below-optimal = Your desired retention is below optimal. Increasing it is recommended.
 deck-config-fsrs-simulator-y-axis-title-time = Review Time/Day
 deck-config-fsrs-simulator-y-axis-title-count = Review Count/Day
+# Description of the y axis in the FSRS simulation
+# diagram (Deck options -> FSRS) showing the total number of
+# cards that can be recalled or retrieved on a specific date.
+deck-config-fsrs-simulator-y-axis-title-memorized = Memorized Total
 deck-config-fsrs-simulator-experimental = FSRS simulator (experimental)
 deck-config-additional-new-cards-to-simulate = Additional new cards to simulate
 deck-config-simulate = Simulate
 deck-config-clear-last-simulate = Clear last simulation
+deck-config-fsrs-simulator-radio-count = Reviews
+# Radio button in the FSRS simulation diagram (Deck options -> FSRS) selecting
+# to show the total number of cards that can be recalled or retrieved on a
+# specific date.
+deck-config-fsrs-simulator-radio-memorized = Memorized
 
 ## NO NEED TO TRANSLATE. This text is no longer used by Anki, and will be removed in the future.
 
@@ -533,3 +542,4 @@ deck-config-invalid-weights = Parameters must be either left blank to use the de
 deck-config-fsrs-on-all-clients =
     Please ensure all of your Anki clients are Anki(Mobile) 23.10+ or AnkiDroid 2.17+. FSRS will
     not work correctly if one of your clients is older.
+deck-config-optimize-all-tip = You can optimize all presets at once by using the dropdown button next to "Save".

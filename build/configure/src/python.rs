@@ -20,20 +20,22 @@ use ninja_gen::python::PythonTypecheck;
 use ninja_gen::rsync::RsyncFiles;
 use ninja_gen::Build;
 
+// When updating Qt, make sure to update the .txt file in bundle.rs as well.
 pub fn setup_venv(build: &mut Build) -> Result<()> {
     let platform_deps = if cfg!(windows) {
         inputs![
-            "python/requirements.qt6_win.txt",
+            "python/requirements.qt6_6.txt",
             "python/requirements.win.txt",
         ]
     } else if cfg!(target_os = "macos") {
-        inputs!["python/requirements.qt6_mac.txt",]
-    } else if cfg!(all(target_os = "linux", target_arch = "aarch64")) {
-        // system-provided Qt on ARM64
+        inputs!["python/requirements.qt6_6.txt",]
+    } else if std::env::var("PYTHONPATH").is_ok() {
+        // assume we have a system-provided Qt
         inputs![]
+    } else if cfg!(target_arch = "aarch64") {
+        inputs!["python/requirements.qt6_8.txt"]
     } else {
-        // normal linux
-        inputs!["python/requirements.qt6_lin.txt"]
+        inputs!["python/requirements.qt6_6.txt"]
     };
     let requirements_txt = inputs!["python/requirements.dev.txt", platform_deps];
     build.add_action(
@@ -55,18 +57,27 @@ pub fn setup_venv(build: &mut Build) -> Result<()> {
         },
     )?;
 
-    // optional venvs for testing with Qt5
-    let mut reqs_qt5 = inputs!["python/requirements.bundle.txt"];
+    // optional venvs for testing other Qt versions
+    let mut venv_reqs = inputs!["python/requirements.bundle.txt"];
     if cfg!(windows) {
-        reqs_qt5 = inputs![reqs_qt5, "python/requirements.win.txt"];
+        venv_reqs = inputs![venv_reqs, "python/requirements.win.txt"];
     }
 
+    build.add_action(
+        "pyenv-qt6.8",
+        PythonEnvironment {
+            folder: "pyenv-qt6.8",
+            base_requirements_txt: inputs!["python/requirements.base.txt"],
+            requirements_txt: inputs![&venv_reqs, "python/requirements.qt6_8.txt"],
+            extra_binary_exports: &[],
+        },
+    )?;
     build.add_action(
         "pyenv-qt5.15",
         PythonEnvironment {
             folder: "pyenv-qt5.15",
             base_requirements_txt: inputs!["python/requirements.base.txt"],
-            requirements_txt: inputs![&reqs_qt5, "python/requirements.qt5_15.txt"],
+            requirements_txt: inputs![&venv_reqs, "python/requirements.qt5_15.txt"],
             extra_binary_exports: &[],
         },
     )?;
@@ -75,7 +86,7 @@ pub fn setup_venv(build: &mut Build) -> Result<()> {
         PythonEnvironment {
             folder: "pyenv-qt5.14",
             base_requirements_txt: inputs!["python/requirements.base.txt"],
-            requirements_txt: inputs![reqs_qt5, "python/requirements.qt5_14.txt"],
+            requirements_txt: inputs![venv_reqs, "python/requirements.qt5_14.txt"],
             extra_binary_exports: &[],
         },
     )?;
@@ -142,10 +153,10 @@ impl BuildAction for BuildWheel {
 
         let tag = if let Some(platform) = self.platform {
             let platform = match platform {
-                Platform::LinuxX64 => "manylinux_2_31_x86_64",
-                Platform::LinuxArm => "manylinux_2_31_aarch64",
-                Platform::MacX64 => "macosx_10_13_x86_64",
-                Platform::MacArm => "macosx_11_0_arm64",
+                Platform::LinuxX64 => "manylinux_2_35_x86_64",
+                Platform::LinuxArm => "manylinux_2_35_aarch64",
+                Platform::MacX64 => "macosx_12_0_x86_64",
+                Platform::MacArm => "macosx_12_0_arm64",
                 Platform::WindowsX64 => "win_amd64",
             };
             format!("cp39-abi3-{platform}")

@@ -30,7 +30,10 @@ def make_message(headers, payload=None):
             msg[name] = value
     if payload:
         msg.set_payload(payload)
-    return msg
+    # EmailMessage wraps the license line, which results in an invalid file
+    out = bytes(msg)
+    out = out.replace(b"License v3 or\n later", b"License v3 or later")
+    return out
 
 
 def write_wheel_file(filename, contents):
@@ -159,20 +162,8 @@ if name == "anki":
 else:
     all_requires = extract_requirements(Path("python/requirements.aqt.in")) + [
         "anki==" + version,
-        ExtraRequires(
-            "qt5",
-            [
-                "pyqt5>=5.14",
-                "pyqtwebengine",
-            ],
-        ),
-        ExtraRequires(
-            "qt6",
-            [
                 "pyqt6>=6.2",
                 "pyqt6-webengine>=6.2",
-            ],
-        ),
     ]
     entrypoints = ["anki = aqt:run"]
     top_level = ["aqt", "_aqt"]
